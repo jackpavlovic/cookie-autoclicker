@@ -40,15 +40,28 @@ print(upragades_and_prices_dict)
 cookies_count = int(driver.find_element_by_css_selector("div #cookies").text.split()[0])
 print(cookies_count)
 
-# for _ in range(0,200):
-#     big_cookie.click()
+for _ in range(0,200):
+    big_cookie.click()
 
 
 
-time.sleep(100)
+
 start_time = datetime.now()
-
+n = 1
 while (datetime.now() - start_time).total_seconds() != 300:
-    pass
+    for _ in range(0,200):
+        big_cookie.click()
+        n += 1
+    if (datetime.now() - start_time).total_seconds() > 15 * n:
+        store_elements = []
+        store_price_elements = []
+        for index in range(0,19):
+            store_elements.append(driver.find_element_by_css_selector(f"#product{index}"))
+            store_price_elements.append(driver.find_element_by_css_selector(f"#productPrice{index}"))
 
+
+        prices_texts = [element.text for element in store_price_elements if element.text != ""]   
+        upragades_and_prices_dict = {}
+        for index in range(0,len(prices_texts)):
+            upragades_and_prices_dict[store_elements[index]] = prices_texts[index]
 
