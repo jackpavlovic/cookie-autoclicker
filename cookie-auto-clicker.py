@@ -34,7 +34,6 @@ prices_texts = [element.text for element in store_price_elements if element.text
 
 
 cookies_count = int(driver.find_element_by_css_selector("div #cookies").text.split()[0])
-print(cookies_count)
 
 for _ in range(0,200):
     big_cookie.click()
@@ -43,34 +42,49 @@ for _ in range(0,200):
 
 
 start_time = datetime.now()
-n = 1
-while (datetime.now() - start_time).total_seconds() != 300:
-    for _ in range(0,200):
+n = 0
+while int((datetime.now() - start_time).total_seconds()) != 300:
+    print(int((datetime.now() - start_time).total_seconds()))
+    for _ in range(0,500):
         big_cookie.click()
-        n += 1
-    if (datetime.now() - start_time).total_seconds() > 15 * n:
+    n += 5
+    if int((datetime.now() - start_time).total_seconds()) > n:
         store_elements = []
+        store_price_elements = []
         for index in range(0,19):
+            store_elements.append(driver.find_element_by_css_selector(f"#product{index}"))
             store_price_elements.append(driver.find_element_by_css_selector(f"#productPrice{index}"))
         
         prices_texts = [element.text for element in store_price_elements if element.text != ""]   
-        good_list = []
+        actual_price_values = []
         for price in prices_texts:
             try: 
-                good_list.append(int(price))
+                actual_price_values.append(int(price))
             except:
                 for symbol in list(price):
                     if symbol == ",":
                         symbols = list(price)
                         del symbols[symbols.index(",")]
                         final = "".join(symbols)
-                        good_list.append(int(final))
+                        actual_price_values.append(int(final))
         
-        
-        
-        cookies_count = int(driver.find_element_by_css_selector("div #cookies").text.split()[0])
+        cookies_count = driver.find_element_by_css_selector("div #cookies").text.split()[0]
+        cookies_count_symbols = list(cookies_count)
+        try :
+            del cookies_count_symbols[cookies_count_symbols.index(",")]
+            cookies_amount = int("".join(cookies_count_symbols))
+        except:
+            cookies_amount = int(cookies_count)
 
-        store_price_elements[prices_texts.index(max(prices_texts))].click()
+        print(max(actual_price_values))
+        if cookies_amount > max(actual_price_values):
+            store_elements[actual_price_values.index(max(actual_price_values))].click()
+        else:
+            for element in store_elements[1:]:
+                try:
+                    element.click()
+                except:
+                    pass
 
             
 
