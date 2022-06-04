@@ -31,11 +31,7 @@ for index in range(0,19):
 
 prices_texts = [element.text for element in store_price_elements if element.text != ""]
 
-upragades_and_prices_dict = {}
-for index in range(0,len(prices_texts)):
-    upragades_and_prices_dict[store_elements[index]] = prices_texts[index]
 
-print(upragades_and_prices_dict)
 
 cookies_count = int(driver.find_element_by_css_selector("div #cookies").text.split()[0])
 print(cookies_count)
@@ -54,14 +50,27 @@ while (datetime.now() - start_time).total_seconds() != 300:
         n += 1
     if (datetime.now() - start_time).total_seconds() > 15 * n:
         store_elements = []
-        store_price_elements = []
         for index in range(0,19):
-            store_elements.append(driver.find_element_by_css_selector(f"#product{index}"))
             store_price_elements.append(driver.find_element_by_css_selector(f"#productPrice{index}"))
-
-
+        
         prices_texts = [element.text for element in store_price_elements if element.text != ""]   
-        upragades_and_prices_dict = {}
-        for index in range(0,len(prices_texts)):
-            upragades_and_prices_dict[store_elements[index]] = prices_texts[index]
+        good_list = []
+        for price in prices_texts:
+            try: 
+                good_list.append(int(price))
+            except:
+                for symbol in list(price):
+                    if symbol == ",":
+                        symbols = list(price)
+                        del symbols[symbols.index(",")]
+                        final = "".join(symbols)
+                        good_list.append(int(final))
+        
+        
+        
+        cookies_count = int(driver.find_element_by_css_selector("div #cookies").text.split()[0])
+
+        store_price_elements[prices_texts.index(max(prices_texts))].click()
+
+            
 
